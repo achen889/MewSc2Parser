@@ -1,0 +1,6 @@
+{
+    "enable_log": true,
+    "log_to_file": true,
+    "clear_file_first": true,
+    "log_filename": "mew_debug"
+}

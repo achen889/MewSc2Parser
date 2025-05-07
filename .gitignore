@@ -1,3 +1,4 @@
-.cpython11.pyc
-.sc2replay
-.png
+*.pyc
+*.SC2REPLAY
+*.png
+*.txt
