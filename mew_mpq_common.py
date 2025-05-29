@@ -6,6 +6,7 @@ import pympq
 import mimetypes
 import struct
 from enum import Enum
+from typing import Optional, List
 
  # Define color codes
 colors = {
@@ -251,6 +252,8 @@ def extract_replay_mpq_data(replay_path, output_dir):
 
 
 import sc2reader
+from sc2reader.events import Event
+from dataclasses import dataclass
 
 def format_sc2reader_replay(replay):
     return format_class_attributes(replay)
@@ -263,6 +266,54 @@ def sc2reader_load_replay(file_path):
     return replay
 
 
+
+@dataclass
+class MewEvent:
+    index: int
+    time: float
+    event: Optional[Event] = None  # sc2reader Event
+    message: Optional[str] = None  # Human-readable message (optional)
+
+    def __str__(self):
+        time_str = format_duration(self.time)
+
+        if self.message:
+            return f"[INDEX #{self.index}][time={time_str}] ~ {self.message}"
+        elif self.event:
+            return f"[INDEX #{self.index}][time={time_str}] ~ {self.event}"
+        else:
+            return f"[INDEX #{self.index}][time={time_str}] ~ <No event data>"
+
+
+def extract_events(replay):
+    events: List[MewEvent] = []
+    index = 0
+
+    # Game start
+    events.append(MewEvent(index, 0, event=None, message=f"Game started on {replay.map_name}"))
+    index += 1
+
+    for player in replay.players:
+        result = "Winner" if player.result == "Win" else "Loser"
+        message = f"Player {player.name} ({player.pick_race}): {result}"
+        events.append(MewEvent(index, 0, event=None, message=message))
+        index += 1
+
+    for raw_event in replay.events:
+        if hasattr(raw_event, "second"):
+            event_time = raw_event.second
+        else:
+            event_time = raw_event.frame / 16.0  # fallback
+
+        events.append(MewEvent(index, event_time, event=raw_event, message=None))
+        index += 1
+
+    # Game end
+    events.append(MewEvent(index, replay.game_length.seconds, event=None, message="Game ended"))
+    return events
+
+
+# =============================
 
 def extract_maps_main():
     map_names = get_all_aie_map_names_from_install()
@@ -346,6 +397,7 @@ __all__ = [
     # Replay utilities
     'sc2reader_load_replay',
     'format_sc2reader_replay',
+    'extract_events',
 
     # Map batch runner
     'extract_maps_main',

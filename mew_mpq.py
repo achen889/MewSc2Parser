@@ -16,8 +16,25 @@ def extract_map_data(map_path, output_dir):
 
 
 def extract_replay_data(replay_path, output_dir):
+    # replay = sc2reader_load_replay(replay_path)
+    # events = extract_events(replay)
+
+    # for time_sec, text in events:
+    #     log_info(f"[{format_time(time_sec)}] {text}")
+    # return ""
     return process_archive(replay_path, output_dir, MPQReplayEntry, MPQType.REPLAY)
 
+def extract_replay_data_w_sc2reader(replay_path, output_dir):
+    replay = sc2reader_load_replay(replay_path)
+    events = extract_events(replay)
+    event_lines = []
+    for mew_event in events:
+        print(f"\n ~ | {mew_event}")
+        print("_"*80)
+        event_lines.append(f"{mew_event}")
+    return "\n".join(event_lines)
+
+# ===================================
 
 def extract_maps_main():
     map_names = get_all_aie_map_names()
@@ -36,10 +53,11 @@ def extract_maps_main():
     output_lines = ["\n === Sorted Files by Map ==="]
     for map_name, mpq_entry in map_registry.items():
         output_lines.append(f"\n ~ | Map: {map_name}")
-        for mime_type, files in mpq_entry.extracted_files.items():
-            output_lines.append(f"\n ~ | [{map_name}]    MIME Type: {mime_type} (Total: {len(files)})")
-            for file_info in files:
-                output_lines.append(f"\n ~ | [{map_name}]        - {file_info['file_name']} ({file_info['size_kb']} KB)")
+        if isinstance(mpq_entry, (MPQMapEntry, MPQReplayEntry)):
+            for mime_type, files in mpq_entry.extracted_files.items():
+                output_lines.append(f"\n ~ | [{map_name}]    MIME Type: {mime_type} (Total: {len(files)})")
+                for file_info in files:
+                    output_lines.append(f"\n ~ | [{map_name}]        - {file_info['file_name']} ({file_info['size_kb']} KB)")
 
     log_info("".join(output_lines))
 
@@ -59,10 +77,13 @@ def extract_all_replays_in_folder(replay_folder, output_dir):
 
     print(f"Found {len(replay_files)} replays. Extracting...")
 
+    i = 0
     for replay_file in replay_files:
+        if i > 2: break # testing only, break after 2 replays
         print(f"Processing replay: {replay_file.name}")
-        replay_registry[replay_file.name] = extract_replay_data(replay_file, output_dir)
-
+        #replay_registry[replay_file.name] = extract_replay_data(replay_file, output_dir)
+        replay_registry[replay_file.name] = extract_replay_data_w_sc2reader(str(replay_file), output_dir)
+        i+=1
 
 def extract_replays_main():
     replay_folder = f"{root_data_folder}replay_files"
@@ -73,16 +94,17 @@ def extract_replays_main():
     output_lines = ["\n === Sorted Files by Replay ==="]
     for replay_name, mpq_entry in replay_registry.items():
         output_lines.append(f"\n ~ | Replay: {replay_name}")
-        for mime_type, files in mpq_entry.extracted_files.items():
-            output_lines.append(f"\n ~ | [{replay_name}]    MIME Type: {mime_type} (Total: {len(files)})")
-            for file_info in files:
-                output_lines.append(f"\n ~ | [{replay_name}]        - {file_info['file_name']} ({file_info['size_kb']} KB)")
+        if isinstance(mpq_entry, (MPQMapEntry, MPQReplayEntry)):
+            for mime_type, files in mpq_entry.extracted_files.items():
+                output_lines.append(f"\n ~ | [{replay_name}]    MIME Type: {mime_type} (Total: {len(files)})")
+                for file_info in files:
+                    output_lines.append(f"\n ~ | [{replay_name}]        - {file_info['file_name']} ({file_info['size_kb']} KB)")
 
     log_info("".join(output_lines))
 
 
 # ================================
 
-extract_maps_main()
-# extract_replays_main()
+#extract_maps_main()
+extract_replays_main()
 
