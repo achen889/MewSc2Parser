@@ -28,11 +28,19 @@ class TrackerEvent(Event):
     def load_context(self, replay):
         pass
 
+    def safe_unit_str(self):
+        return str(self.unit) if hasattr(self, "unit") and self.unit else "<UnknownUnit>"
+
+    def safe_owner_str(self):
+        if hasattr(self, "unit") and self.unit and hasattr(self.unit, "owner") and self.unit.owner:
+            return str(self.unit.owner)
+        return "<NoOwner>"
+
     def _str_prefix(self):
         return "{0}\t ".format(Length(seconds=int(self.frame / 16)))
 
     def __str__(self):
-        return self._str_prefix() + self.name
+        return super().__str__() #self._str_prefix() + self.name
 
 
 class PlayerSetupEvent(TrackerEvent):
@@ -275,7 +283,8 @@ class PlayerStatsEvent(TrackerEvent):
         )
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - Stats Update".format(str(self.player))
+        return super().__str__()
+        #return self._str_prefix() + "{0: >15} - Stats Update".format(str(self.player))
 
 
 class UnitBornEvent(TrackerEvent):
@@ -337,9 +346,10 @@ class UnitBornEvent(TrackerEvent):
             self.location = (self.x, self.y)
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - Unit born {1}".format(
-            str(self.unit_upkeeper), self.unit
-        )
+        return super().__str__()
+        # return self._str_prefix() + "{0: >15} - Unit born {1}".format(
+        #     str(self.unit_upkeeper), self.unit
+        # )
 
 
 class UnitDiedEvent(TrackerEvent):
@@ -412,9 +422,10 @@ class UnitDiedEvent(TrackerEvent):
                 )
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - Unit died {1}.".format(
-            str(self.unit.owner), self.unit
-        )
+        return super().__str__()
+        # return self._str_prefix() + "{0: >15} - Unit died {1}.".format(
+        #     self.safe_owner_str(), self.safe_unit_str()
+        # )
 
 
 class UnitOwnerChangeEvent(TrackerEvent):
@@ -482,9 +493,13 @@ class UnitTypeChangeEvent(TrackerEvent):
         self.unit_type_name = data[2].decode("utf8")
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - Unit {1} type changed to {2}".format(
-            str(self.unit.owner), self.unit, self.unit_type_name
-        )
+        return super().__str__()
+
+        # unit_str = self.safe_unit_str()
+        # owner_str = self.safe_owner_str()
+        # return self._str_prefix() + "{0: >15} - Unit {1} type changed to {2}".format(
+        #     owner_str, unit_str, self.unit_type_name
+        # )
 
 
 class UpgradeCompleteEvent(TrackerEvent):
@@ -508,9 +523,10 @@ class UpgradeCompleteEvent(TrackerEvent):
         self.count = data[2]
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - {1} upgrade completed".format(
-            str(self.player), self.upgrade_type_name
-        )
+        return super().__str__()
+        # return self._str_prefix() + "{0: >15} - {1} upgrade completed".format(
+        #     str(self.player), self.upgrade_type_name
+        # )
 
 
 class UnitInitEvent(TrackerEvent):
@@ -567,9 +583,11 @@ class UnitInitEvent(TrackerEvent):
             self.location = (self.x, self.y)
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - Unit initiated {1}".format(
-            str(self.unit_upkeeper), self.unit
-        )
+        return super().__str__()
+
+        # return self._str_prefix() + "{0: >15} - Unit initiated {1}".format(
+        #     str(self.unit_upkeeper), self.unit
+        # )
 
 
 class UnitDoneEvent(TrackerEvent):
@@ -594,9 +612,10 @@ class UnitDoneEvent(TrackerEvent):
         self.unit = None
 
     def __str__(self):
-        return self._str_prefix() + "{0: >15} - Unit {1} done".format(
-            str(self.unit.owner), self.unit
-        )
+        return super().__str__()
+        # return self._str_prefix() + "{0: >15} - Unit {1} done".format(
+        #     self.safe_owner_str(), self.unit
+        # )
 
 
 class UnitPositionsEvent(TrackerEvent):
@@ -634,4 +653,5 @@ class UnitPositionsEvent(TrackerEvent):
             self.positions.append((unit_index, (x, y)))
 
     def __str__(self):
-        return self._str_prefix() + "Unit positions update"
+        return super().__str__()
+        #return self._str_prefix() + "Unit positions update"

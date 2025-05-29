@@ -26,11 +26,12 @@ class MessageEvent(Event):
         self.name = self.__class__.__name__
 
     def _str_prefix(self):
-        player_name = self.player.name if getattr(self, "pid", 16) != 16 else "Global"
+        player_name = self.player.name if hasattr(self, "player") and getattr(self, "pid", 16) != 16 else "Global"
         return "{0}\t{1:<15} ".format(Length(seconds=int(self.frame / 16)), player_name)
 
     def __str__(self):
-        return self._str_prefix() + self.name
+        return super().__str__()
+        #return self._str_prefix() + self.name
 
 
 @loggable
@@ -56,6 +57,9 @@ class ChatEvent(MessageEvent):
         #: Flag marked true of message was to observers.
         self.to_observers = self.target == 4
 
+    def __str__(self):
+        return super().__str__()
+        #return self._str_prefix() + self.name + " : " + self.text
 
 @loggable
 class ProgressEvent(MessageEvent):
