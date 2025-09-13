@@ -1,4 +1,33 @@
+# === Python cache ===
+__pycache__/
 *.pyc
-*.SC2REPLAY
+*.pyo
+*.pyd
+
+# === Virtual environments ===
+mew_venv/
+.venv/
+venv/
+
+# === StarCraft II replays ===
+*.SC2Replay
+
+# === Images / screenshots / plots ===
 *.png
+*.jpg
+*.jpeg
+*.gif
+
+# === Text logs / analysis outputs ===
 *.txt
+*.log
+*.csv
+
+# === Data / outputs (logs, replays, analysis dumps) ===
+/data/
+/out/
+
+# === Model / cache directories (optional, but keeps Hugging Face/Torch from ballooning repo) ===
+/.cache/
+/huggingface/
+/torch_cache/
