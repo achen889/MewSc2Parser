@@ -1,14 +1,14 @@
 @echo off
 echo ====================================================
-echo   MEW VENV SETUP SCRIPT (Python 3.11)
+echo   MEW VENV SETUP SCRIPT (Python 3.12)
 echo ====================================================
 echo.
 
 REM Step 1: Create virtual environment
 echo [1/4] Creating virtual environment: mew_venv ...
-py -3.11 -m venv mew_venv
+py -3.12 -m venv mew_venv
 if errorlevel 1 (
-    echo [!] Failed to create venv. Make sure Python 3.11 is installed.
+    echo [!] Failed to create venv. Make sure Python 3.12 is installed.
     pause
     exit /b 1
 )
