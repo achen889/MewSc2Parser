@@ -10,9 +10,39 @@ import re
 print(f" ~ | torch_can_cuda={torch.cuda.is_available()}")  # should return True
 
 import soundfile as sf
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from huggingface_hub import HfApi
+import transformers as tf
+
+def _ensure_top_level(name: str, module_path: str, attr: str | None = None):
+    """
+    Ensure transformers.<name> exists by importing from module_path and
+    assigning to the transformers namespace if needed.
+    """
+    print(f"[ensure] name={name!r}, module_path={module_path!r}, attr={attr!r}")
+    try:
+        getattr(tf, name)
+        print(f"[ensure] transformers.{name} already present")
+        return
+    except AttributeError:
+        print(f"[ensure] transformers.{name} missing; importing from {module_path}")
+
+    try:
+        obj_name = attr or name
+        mod = __import__(module_path, fromlist=[obj_name])
+        obj = getattr(mod, obj_name)
+        setattr(tf, name, obj)
+        print(f"[ensure] set transformers.{name} = {module_path}.{obj_name}")
+    except Exception as e:
+        print(f"[ensure] FAILED to set transformers.{name}: {e}")
+        raise
+
+# xcodec2 expects these at top-level on older HF versions:
+_ensure_top_level("PreTrainedModel", "transformers.modeling_utils")
+
+
 from xcodec2.modeling_xcodec2 import XCodec2Model
+
+from huggingface_hub import HfApi
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from transformers.utils import logging
 logging.set_verbosity_error()

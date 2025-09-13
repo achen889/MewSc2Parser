@@ -12,7 +12,7 @@ REM Path to venv
 set VENV_PATH=%cd%\mew_venv
 
 REM Check that venv exists
-if not exist "%VENV_PATH%\Scripts\activate.bat" (
+if not exist "%VENV_PATH%\Scripts\activate" (
     echo [!] Virtual environment not found at:
     echo     %VENV_PATH%
     echo Run mew_venv.bat first to create it.

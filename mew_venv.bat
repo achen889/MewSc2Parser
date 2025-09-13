@@ -12,6 +12,7 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+
 echo [+] Virtual environment created.
 echo.
 
@@ -25,6 +26,8 @@ if errorlevel 1 (
 )
 echo [+] venv activated.
 echo.
+python --version 
+pause
 
 REM Step 3: Install dependencies from requirements.txt
 echo [3/4] Installing core requirements ...
@@ -36,6 +39,8 @@ if errorlevel 1 (
     echo [+] requirements.txt installed successfully.
 )
 echo.
+python -m pip list
+pause
 
 REM Step 4: Install AI-related dependencies
 echo [4/4] Installing AI-related requirements ...
@@ -46,6 +51,8 @@ if errorlevel 1 (
     echo [+] requirements_ai.txt installed successfully.
 )
 echo.
+python -m pip list
+pause
 
 echo ====================================================
 echo   SETUP COMPLETE
